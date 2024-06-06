@@ -117,11 +117,9 @@ async function requestPermission() {
  */
 function sendNotification(options) {
     if (typeof options === "string") {
-        // eslint-disable-next-line no-new
         new window.Notification(options);
     }
     else {
-        // eslint-disable-next-line no-new
         new window.Notification(options.title, options);
     }
 }
