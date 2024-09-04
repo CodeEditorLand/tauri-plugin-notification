@@ -4,8 +4,8 @@
  *
  * @module
  */
-import { type PluginListener } from "@tauri-apps/api/core";
-export type { PermissionState } from "@tauri-apps/api/core";
+import { type PluginListener } from '@tauri-apps/api/core';
+export type { PermissionState } from '@tauri-apps/api/core';
 /**
  * Options to send a notification.
  *
@@ -452,5 +452,5 @@ declare function removeChannel(id: string): Promise<void>;
 declare function channels(): Promise<Channel[]>;
 declare function onNotificationReceived(cb: (notification: Options) => void): Promise<PluginListener>;
 declare function onAction(cb: (notification: Options) => void): Promise<PluginListener>;
-export type { Attachment, Options, Action, ActionType, PendingNotification, ActiveNotification, Channel, ScheduleInterval, };
-export { Importance, Visibility, sendNotification, requestPermission, isPermissionGranted, registerActionTypes, pending, cancel, cancelAll, active, removeActive, removeAllActive, createChannel, removeChannel, channels, onNotificationReceived, onAction, Schedule, ScheduleEvery, };
+export type { Attachment, Options, Action, ActionType, PendingNotification, ActiveNotification, Channel, ScheduleInterval };
+export { Importance, Visibility, sendNotification, requestPermission, isPermissionGranted, registerActionTypes, pending, cancel, cancelAll, active, removeActive, removeAllActive, createChannel, removeChannel, channels, onNotificationReceived, onAction, Schedule, ScheduleEvery };
