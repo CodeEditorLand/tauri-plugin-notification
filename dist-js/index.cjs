@@ -26,27 +26,27 @@ exports.ScheduleEvery = void 0;
 	ScheduleEvery["Second"] = "second";
 })(exports.ScheduleEvery || (exports.ScheduleEvery = {}));
 class Schedule {
-	static at(date, repeating = false, allowWhileIdle = false) {
-		return {
-			at: { date, repeating, allowWhileIdle },
-			interval: undefined,
-			every: undefined,
-		};
-	}
-	static interval(interval, allowWhileIdle = false) {
-		return {
-			at: undefined,
-			interval: { interval, allowWhileIdle },
-			every: undefined,
-		};
-	}
-	static every(kind, count, allowWhileIdle = false) {
-		return {
-			at: undefined,
-			interval: undefined,
-			every: { interval: kind, count, allowWhileIdle },
-		};
-	}
+    static at(date, repeating = false, allowWhileIdle = false) {
+        return {
+            at: { date, repeating, allowWhileIdle },
+            interval: undefined,
+            every: undefined
+        };
+    }
+    static interval(interval, allowWhileIdle = false) {
+        return {
+            at: undefined,
+            interval: { interval, allowWhileIdle },
+            every: undefined
+        };
+    }
+    static every(kind, count, allowWhileIdle = false) {
+        return {
+            at: undefined,
+            interval: undefined,
+            every: { interval: kind, count, allowWhileIdle }
+        };
+    }
 }
 exports.Importance = void 0;
 (function (Importance) {
@@ -73,12 +73,10 @@ exports.Visibility = void 0;
  * @since 2.0.0
  */
 async function isPermissionGranted() {
-	if (window.Notification.permission !== "default") {
-		return await Promise.resolve(
-			window.Notification.permission === "granted",
-		);
-	}
-	return await core.invoke("plugin:notification|is_permission_granted");
+    if (window.Notification.permission !== 'default') {
+        return await Promise.resolve(window.Notification.permission === 'granted');
+    }
+    return await core.invoke('plugin:notification|is_permission_granted');
 }
 /**
  * Requests the permission to send notifications.
@@ -118,11 +116,12 @@ async function requestPermission() {
  * @since 2.0.0
  */
 function sendNotification(options) {
-	if (typeof options === "string") {
-		new window.Notification(options);
-	} else {
-		new window.Notification(options.title, options);
-	}
+    if (typeof options === 'string') {
+        new window.Notification(options);
+    }
+    else {
+        new window.Notification(options.title, options);
+    }
 }
 /**
  * Register actions that are performed when the user clicks on the notification.
@@ -144,7 +143,7 @@ function sendNotification(options) {
  * @since 2.0.0
  */
 async function registerActionTypes(types) {
-	await core.invoke("plugin:notification|register_action_types", { types });
+    await core.invoke('plugin:notification|register_action_types', { types });
 }
 /**
  * Retrieves the list of pending notifications.
@@ -160,7 +159,7 @@ async function registerActionTypes(types) {
  * @since 2.0.0
  */
 async function pending() {
-	return await core.invoke("plugin:notification|get_pending");
+    return await core.invoke('plugin:notification|get_pending');
 }
 /**
  * Cancels the pending notifications with the given list of identifiers.
@@ -176,7 +175,7 @@ async function pending() {
  * @since 2.0.0
  */
 async function cancel(notifications) {
-	await core.invoke("plugin:notification|cancel", { notifications });
+    await core.invoke('plugin:notification|cancel', { notifications });
 }
 /**
  * Cancels all pending notifications.
@@ -192,7 +191,7 @@ async function cancel(notifications) {
  * @since 2.0.0
  */
 async function cancelAll() {
-	await core.invoke("plugin:notification|cancel");
+    await core.invoke('plugin:notification|cancel');
 }
 /**
  * Retrieves the list of active notifications.
@@ -208,7 +207,7 @@ async function cancelAll() {
  * @since 2.0.0
  */
 async function active() {
-	return await core.invoke("plugin:notification|get_active");
+    return await core.invoke('plugin:notification|get_active');
 }
 /**
  * Removes the active notifications with the given list of identifiers.
@@ -224,7 +223,7 @@ async function active() {
  * @since 2.0.0
  */
 async function removeActive(notifications) {
-	await core.invoke("plugin:notification|remove_active", { notifications });
+    await core.invoke('plugin:notification|remove_active', { notifications });
 }
 /**
  * Removes all active notifications.
@@ -240,7 +239,7 @@ async function removeActive(notifications) {
  * @since 2.0.0
  */
 async function removeAllActive() {
-	await core.invoke("plugin:notification|remove_active");
+    await core.invoke('plugin:notification|remove_active');
 }
 /**
  * Creates a notification channel.
@@ -263,7 +262,7 @@ async function removeAllActive() {
  * @since 2.0.0
  */
 async function createChannel(channel) {
-	await core.invoke("plugin:notification|create_channel", { ...channel });
+    await core.invoke('plugin:notification|create_channel', { ...channel });
 }
 /**
  * Removes the channel with the given identifier.
@@ -279,7 +278,7 @@ async function createChannel(channel) {
  * @since 2.0.0
  */
 async function removeChannel(id) {
-	await core.invoke("plugin:notification|delete_channel", { id });
+    await core.invoke('plugin:notification|delete_channel', { id });
 }
 /**
  * Retrieves the list of notification channels.
@@ -295,13 +294,13 @@ async function removeChannel(id) {
  * @since 2.0.0
  */
 async function channels() {
-	return await core.invoke("plugin:notification|listChannels");
+    return await core.invoke('plugin:notification|listChannels');
 }
 async function onNotificationReceived(cb) {
-	return await core.addPluginListener("notification", "notification", cb);
+    return await core.addPluginListener('notification', 'notification', cb);
 }
 async function onAction(cb) {
-	return await core.addPluginListener("notification", "actionPerformed", cb);
+    return await core.addPluginListener('notification', 'actionPerformed', cb);
 }
 
 exports.Schedule = Schedule;
