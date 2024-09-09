@@ -3,22 +3,22 @@
 // SPDX-License-Identifier: MIT
 
 const COMMANDS: &[&str] = &[
-	"notify",
-	"request_permission",
-	"is_permission_granted",
-	"register_action_types",
-	"register_listener",
-	"cancel",
-	"get_pending",
-	"remove_active",
-	"get_active",
-	"check_permissions",
-	"show",
-	"batch",
-	"list_channels",
-	"delete_channel",
-	"create_channel",
-	"permission_state",
+    "notify",
+    "request_permission",
+    "is_permission_granted",
+    "register_action_types",
+    "register_listener",
+    "cancel",
+    "get_pending",
+    "remove_active",
+    "get_active",
+    "check_permissions",
+    "show",
+    "batch",
+    "list_channels",
+    "delete_channel",
+    "create_channel",
+    "permission_state",
 ];
 
 fn main() {

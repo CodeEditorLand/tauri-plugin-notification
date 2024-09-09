@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-var core = require("@tauri-apps/api/core");
+var core = require('@tauri-apps/api/core');
 
 // Copyright 2019-2023 Tauri Programme within The Commons Conservancy
 // SPDX-License-Identifier: Apache-2.0
@@ -13,17 +13,17 @@ var core = require("@tauri-apps/api/core");
  */
 exports.ScheduleEvery = void 0;
 (function (ScheduleEvery) {
-	ScheduleEvery["Year"] = "year";
-	ScheduleEvery["Month"] = "month";
-	ScheduleEvery["TwoWeeks"] = "twoWeeks";
-	ScheduleEvery["Week"] = "week";
-	ScheduleEvery["Day"] = "day";
-	ScheduleEvery["Hour"] = "hour";
-	ScheduleEvery["Minute"] = "minute";
-	/**
-	 * Not supported on iOS.
-	 */
-	ScheduleEvery["Second"] = "second";
+    ScheduleEvery["Year"] = "year";
+    ScheduleEvery["Month"] = "month";
+    ScheduleEvery["TwoWeeks"] = "twoWeeks";
+    ScheduleEvery["Week"] = "week";
+    ScheduleEvery["Day"] = "day";
+    ScheduleEvery["Hour"] = "hour";
+    ScheduleEvery["Minute"] = "minute";
+    /**
+     * Not supported on iOS.
+     */
+    ScheduleEvery["Second"] = "second";
 })(exports.ScheduleEvery || (exports.ScheduleEvery = {}));
 class Schedule {
     static at(date, repeating = false, allowWhileIdle = false) {
@@ -50,17 +50,17 @@ class Schedule {
 }
 exports.Importance = void 0;
 (function (Importance) {
-	Importance[(Importance["None"] = 0)] = "None";
-	Importance[(Importance["Min"] = 1)] = "Min";
-	Importance[(Importance["Low"] = 2)] = "Low";
-	Importance[(Importance["Default"] = 3)] = "Default";
-	Importance[(Importance["High"] = 4)] = "High";
+    Importance[Importance["None"] = 0] = "None";
+    Importance[Importance["Min"] = 1] = "Min";
+    Importance[Importance["Low"] = 2] = "Low";
+    Importance[Importance["Default"] = 3] = "Default";
+    Importance[Importance["High"] = 4] = "High";
 })(exports.Importance || (exports.Importance = {}));
 exports.Visibility = void 0;
 (function (Visibility) {
-	Visibility[(Visibility["Secret"] = -1)] = "Secret";
-	Visibility[(Visibility["Private"] = 0)] = "Private";
-	Visibility[(Visibility["Public"] = 1)] = "Public";
+    Visibility[Visibility["Secret"] = -1] = "Secret";
+    Visibility[Visibility["Private"] = 0] = "Private";
+    Visibility[Visibility["Public"] = 1] = "Public";
 })(exports.Visibility || (exports.Visibility = {}));
 /**
  * Checks if the permission to send notifications is granted.
@@ -95,7 +95,7 @@ async function isPermissionGranted() {
  * @since 2.0.0
  */
 async function requestPermission() {
-	return await window.Notification.requestPermission();
+    return await window.Notification.requestPermission();
 }
 /**
  * Sends a notification to the user.
