@@ -1,5 +1,14 @@
 {
+<<<<<<< HEAD
 	"name": "@tauri-apps/plugin-notification",
+=======
+	"authors": [
+		"Tauri Programme within The Commons Conservancy"
+	],
+	"dependencies": {
+		"@tauri-apps/api": "2.0.0-rc.5"
+	},
+>>>>>>> df3e4d62d1c08bc3b9e95472527c44fb935af1f1
 	"exports": {
 		"import": "./dist-js/index.js",
 		"require": "./dist-js/index.cjs",
