@@ -1,10 +1,10 @@
-//! **Experimental** server taking the place of your Desktop Environment's Notification Server.
+//! **Experimental** server taking the place of your Desktop Environment's
+//! Notification Server.
 //!
-//! This is not nearly meant for anything but testing, as it only prints notifications to stdout.
-//! It does not respond properly either yet.
+//! This is not nearly meant for anything but testing, as it only prints
+//! notifications to stdout. It does not respond properly either yet.
 //!
 //! This server will not replace an already running notification server.
-//!
 
 #![allow(unused_imports, unused_variables, dead_code)]
 
@@ -24,22 +24,24 @@ use dbus::{
 
 use super::{
 	xdg::{NOTIFICATION_NAMESPACE, NOTIFICATION_OBJECTPATH},
-	Hint, Notification, Timeout,
+	Hint,
+	Notification,
+	Timeout,
 };
 
-static DBUS_ERROR_FAILED: &str = "org.freedesktop.DBus.Error.Failed";
+static DBUS_ERROR_FAILED:&str = "org.freedesktop.DBus.Error.Failed";
 /// Version of the crate equals the version server.
-pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+pub const VERSION:&str = env!("CARGO_PKG_VERSION");
 
 /// An **experimental** notification server.
 /// See [the module level documentation](index.html) for more.
 #[derive(Debug, Default)]
 pub struct NotificationServer {
 	/// Counter for generating notification ids
-	counter: Mutex<Cell<u32>>,
+	counter:Mutex<Cell<u32>>,
 
 	/// A flag that stops the server
-	stopped: Mutex<Cell<bool>>,
+	stopped:Mutex<Cell<bool>>,
 }
 
 impl NotificationServer {
@@ -56,17 +58,14 @@ impl NotificationServer {
 	}
 
 	fn is_stopped(&self) -> bool {
-		if let Ok(stop) = self.stopped.lock() {
-			stop.get()
-		} else {
-			true
-		}
+		if let Ok(stop) = self.stopped.lock() { stop.get() } else { true }
 	}
 
 	/// Create a new `NotificationServer` instance.
 	pub fn create() -> Arc<NotificationServer> {
 		Arc::new(NotificationServer::default())
 	}
+
 	// pub fn notify_mothod<F>(&mut self, closure: F)
 	//    -> Method
 	//    where F: Fn(&Notification)
@@ -75,22 +74,29 @@ impl NotificationServer {
 	// fn handle_notification
 
 	/// Start listening for incoming notifications
-	pub fn start<F: 'static>(me: &Arc<Self>, closure: F)
+	pub fn start<F:'static>(me:&Arc<Self>, closure:F)
 	where
-		F: Fn(&Notification),
-	{
+		F: Fn(&Notification), {
 		let connection = Connection::get_private(BusType::Session).unwrap();
 
 		connection.release_name(NOTIFICATION_NAMESPACE).unwrap();
-		connection.register_name(NOTIFICATION_NAMESPACE, NameFlag::ReplaceExisting as u32).unwrap();
+		connection
+			.register_name(
+				NOTIFICATION_NAMESPACE,
+				NameFlag::ReplaceExisting as u32,
+			)
+			.unwrap();
 		connection.register_object_path(NOTIFICATION_OBJECTPATH).unwrap();
 
 		let mytex = Arc::new(Mutex::new(me.clone()));
 
 		let factory = Factory::new_fn::<()>(); // D::Tree = ()
 		let tree = factory.tree(()).add(
-			factory.object_path(NOTIFICATION_OBJECTPATH, ()).introspectable().add(
-				factory
+			factory
+				.object_path(NOTIFICATION_OBJECTPATH, ())
+				.introspectable()
+				.add(
+					factory
                         .interface(NOTIFICATION_NAMESPACE, ())
                         .add_m(method_notify(&factory, closure))
                         .add_m(method_close_notification(&factory))
@@ -99,7 +105,7 @@ impl NotificationServer {
                         // .add_signal(method_action_invoked(&factory))
                         .add_m(method_get_capabilities(&factory))
                         .add_m(method_get_server_information(&factory)),
-			),
+				),
 		);
 
 		connection.add_handler(tree);
@@ -114,8 +120,8 @@ impl NotificationServer {
 	}
 
 	fn stop_server(
-		me: Arc<Mutex<Arc<Self>>>,
-		factory: &Factory<MTFn>,
+		me:Arc<Mutex<Arc<Self>>>,
+		factory:&Factory<MTFn>,
 	) -> tree::Method<MTFn<()>, ()> {
 		factory
 			.method("Stop", (), move |minfo| {
@@ -131,42 +137,44 @@ impl NotificationServer {
 	}
 }
 
-fn hints_from_variants<A: RefArg>(hints: &HashMap<String, A>) -> HashSet<Hint> {
+fn hints_from_variants<A:RefArg>(hints:&HashMap<String, A>) -> HashSet<Hint> {
 	hints.iter().map(Into::into).collect()
 }
 
-fn method_notify<F: 'static>(
-	factory: &Factory<MTFn>,
-	on_notification: F,
+fn method_notify<F:'static>(
+	factory:&Factory<MTFn>,
+	on_notification:F,
 ) -> tree::Method<MTFn<()>, ()>
 where
-	F: Fn(&Notification),
-{
+	F: Fn(&Notification), {
 	factory
 		.method("Notify", (), move |minfo| {
 			let mut i = minfo.msg.iter_init();
-			let appname: String = i.read()?;
-			let replaces_id: u32 = i.read()?;
-			let icon: String = i.read()?;
-			let summary: String = i.read()?;
-			let body: String = i.read()?;
-			let actions: Vec<String> = i.read()?;
-			let hints: ::std::collections::HashMap<String, arg::Variant<Box<dyn RefArg>>> =
-				i.read()?;
-			let timeout: i32 = i.read()?;
+			let appname:String = i.read()?;
+			let replaces_id:u32 = i.read()?;
+			let icon:String = i.read()?;
+			let summary:String = i.read()?;
+			let body:String = i.read()?;
+			let actions:Vec<String> = i.read()?;
+			let hints:::std::collections::HashMap<
+				String,
+				arg::Variant<Box<dyn RefArg>>,
+			> = i.read()?;
+			let timeout:i32 = i.read()?;
 			println!("hints {:?} ", hints);
 
-			// let arg0 = try!(d.notify(app_name, replaces_id, app_icon, summary, body, actions, hints, timeout));
+			// let arg0 = try!(d.notify(app_name, replaces_id, app_icon,
+			// summary, body, actions, hints, timeout));
 			let notification = Notification {
 				appname,
 				icon,
 				summary,
 				body,
 				actions,
-				hints: hints_from_variants(&hints),
-				timeout: Timeout::from(timeout),
-				id: if replaces_id == 0 { None } else { Some(replaces_id) },
-				subtitle: None,
+				hints:hints_from_variants(&hints),
+				timeout:Timeout::from(timeout),
+				id:if replaces_id == 0 { None } else { Some(replaces_id) },
+				subtitle:None,
 			};
 
 			on_notification(&notification);
@@ -187,7 +195,9 @@ where
 		.out_arg(("", "u"))
 }
 
-fn method_close_notification(factory: &Factory<MTFn>) -> tree::Method<MTFn<()>, ()> {
+fn method_close_notification(
+	factory:&Factory<MTFn>,
+) -> tree::Method<MTFn<()>, ()> {
 	factory
 		.method("CloseNotification", (), |minfo| {
 			let i = minfo.msg.iter_init();
@@ -197,10 +207,12 @@ fn method_close_notification(factory: &Factory<MTFn>) -> tree::Method<MTFn<()>, 
 		.in_arg(("id", "u"))
 }
 
-fn method_get_capabilities(factory: &Factory<MTFn>) -> tree::Method<MTFn<()>, ()> {
+fn method_get_capabilities(
+	factory:&Factory<MTFn>,
+) -> tree::Method<MTFn<()>, ()> {
 	factory
 		.method("GetCapabilities", (), |minfo| {
-			let caps: Vec<String> = vec![];
+			let caps:Vec<String> = vec![];
 			let rm = minfo.msg.method_return();
 			let rm = rm.append1(caps);
 			Ok(vec![rm])
@@ -208,11 +220,17 @@ fn method_get_capabilities(factory: &Factory<MTFn>) -> tree::Method<MTFn<()>, ()
 		.out_arg(("caps", "as"))
 }
 
-fn method_get_server_information(factory: &Factory<MTFn>) -> tree::Method<MTFn<()>, ()> {
+fn method_get_server_information(
+	factory:&Factory<MTFn>,
+) -> tree::Method<MTFn<()>, ()> {
 	factory
 		.method("GetServerInformation", (), |minfo| {
-			let (name, vendor, version, spec_version) =
-				("notify-rust", "notify-rust", env!("CARGO_PKG_VERSION"), "0.0.0");
+			let (name, vendor, version, spec_version) = (
+				"notify-rust",
+				"notify-rust",
+				env!("CARGO_PKG_VERSION"),
+				"0.0.0",
+			);
 			let rm = minfo.msg.method_return();
 			let rm = rm.append1(name);
 			let rm = rm.append1(vendor);
