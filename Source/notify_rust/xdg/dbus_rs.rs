@@ -35,30 +35,20 @@ pub mod bus {
 
 	impl Default for NotificationBus {
 		fn default() -> Self {
-			Self(
-				dbus::strings::BusName::from_slice(NOTIFICATION_DEFAULT_BUS)
-					.unwrap(),
-			)
+			Self(dbus::strings::BusName::from_slice(NOTIFICATION_DEFAULT_BUS).unwrap())
 		}
 	}
 
 	impl NotificationBus {
 		fn namespaced_custom(custom_path:&str) -> Option<String> {
 			// abusing path for semantic join
-			skip_first_slash(
-				PathBuf::from("/de/hoodie/Notification")
-					.join(custom_path)
-					.to_str()?,
-			)
-			.replace('/', ".")
-			.into()
+			skip_first_slash(PathBuf::from("/de/hoodie/Notification").join(custom_path).to_str()?)
+				.replace('/', ".")
+				.into()
 		}
 
 		pub fn custom(custom_path:&str) -> Option<Self> {
-			let name = dbus::strings::BusName::new(Self::namespaced_custom(
-				custom_path,
-			)?)
-			.ok()?;
+			let name = dbus::strings::BusName::new(Self::namespaced_custom(custom_path)?).ok()?;
 			Some(Self(name))
 		}
 
@@ -85,16 +75,12 @@ impl DbusNotificationHandle {
 		DbusNotificationHandle { id, connection, notification }
 	}
 
-	pub fn wait_for_action(
-		self,
-		invocation_closure:impl ActionResponseHandler,
-	) {
+	pub fn wait_for_action(self, invocation_closure:impl ActionResponseHandler) {
 		wait_for_action_signal(&self.connection, self.id, invocation_closure);
 	}
 
 	pub fn close(self) {
-		let mut message =
-			build_message("CloseNotification", Default::default());
+		let mut message = build_message("CloseNotification", Default::default());
 		message.append_items(&[self.id.into()]);
 		let _ = self.connection.send(message); // If closing fails there's nothing we could do anyway
 	}
@@ -110,12 +96,8 @@ impl DbusNotificationHandle {
 	}
 
 	pub fn update(&mut self) {
-		self.id = send_notification_via_connection(
-			&self.notification,
-			self.id,
-			&self.connection,
-		)
-		.unwrap();
+		self.id = send_notification_via_connection(&self.notification, self.id, &self.connection)
+			.unwrap();
 	}
 }
 
@@ -124,12 +106,7 @@ pub fn send_notification_via_connection(
 	id:u32,
 	connection:&Connection,
 ) -> Result<u32> {
-	send_notification_via_connection_at_bus(
-		notification,
-		id,
-		connection,
-		Default::default(),
-	)
+	send_notification_via_connection_at_bus(notification, id, connection, Default::default())
 }
 
 pub fn send_notification_via_connection_at_bus(
@@ -159,9 +136,7 @@ pub fn send_notification_via_connection_at_bus(
 	}
 }
 
-pub fn connect_and_send_notification(
-	notification:&Notification,
-) -> Result<DbusNotificationHandle> {
+pub fn connect_and_send_notification(notification:&Notification) -> Result<DbusNotificationHandle> {
 	let bus = notification.bus.clone();
 	connect_and_send_notification_at_bus(notification, bus)
 }
@@ -172,12 +147,7 @@ pub fn connect_and_send_notification_at_bus(
 ) -> Result<DbusNotificationHandle> {
 	let connection = Connection::get_private(BusType::Session)?;
 	let inner_id = notification.id.unwrap_or(0);
-	let id = send_notification_via_connection_at_bus(
-		notification,
-		inner_id,
-		&connection,
-		bus,
-	)?;
+	let id = send_notification_via_connection_at_bus(notification, inner_id, &connection, bus)?;
 
 	Ok(DbusNotificationHandle::new(id, connection, notification.clone()))
 }
@@ -189,9 +159,7 @@ fn build_message(method_name:&str, bus:NotificationBus) -> Message {
 		NOTIFICATION_INTERFACE,
 		method_name,
 	)
-	.unwrap_or_else(|_| {
-		panic!("Error building message call {:?}.", method_name)
-	})
+	.unwrap_or_else(|_| panic!("Error building message call {:?}.", method_name))
 }
 
 pub fn pack_hints(notification:&Notification) -> Result<MessageItem> {
@@ -207,9 +175,7 @@ pub fn pack_hints(notification:&Notification) -> Result<MessageItem> {
 		}
 	}
 
-	Ok(MessageItem::Array(
-		MessageItemArray::new(vec![], "a{sv}".into()).unwrap(),
-	))
+	Ok(MessageItem::Array(MessageItemArray::new(vec![], "a{sv}".into()).unwrap()))
 }
 
 pub fn pack_actions(notification:&Notification) -> MessageItem {
@@ -277,22 +243,12 @@ pub fn handle_action(id:u32, func:impl ActionResponseHandler) {
 }
 
 // Listens for the `ActionInvoked(UInt32, String)` signal.
-fn wait_for_action_signal(
-	connection:&Connection,
-	id:u32,
-	handler:impl ActionResponseHandler,
-) {
+fn wait_for_action_signal(connection:&Connection, id:u32, handler:impl ActionResponseHandler) {
 	connection
-		.add_match(&format!(
-			"interface='{}',member='ActionInvoked'",
-			NOTIFICATION_INTERFACE
-		))
+		.add_match(&format!("interface='{}',member='ActionInvoked'", NOTIFICATION_INTERFACE))
 		.unwrap();
 	connection
-		.add_match(&format!(
-			"interface='{}',member='NotificationClosed'",
-			NOTIFICATION_INTERFACE
-		))
+		.add_match(&format!("interface='{}',member='NotificationClosed'", NOTIFICATION_INTERFACE))
 		.unwrap();
 
 	for item in connection.iter(1000) {
@@ -300,27 +256,24 @@ fn wait_for_action_signal(
 			let items = message.get_items();
 
 			let (path, interface, member) = (
-				message.path().map_or_else(String::new, |p| {
-					p.into_cstring().to_string_lossy().into_owned()
-				}),
-				message.interface().map_or_else(String::new, |p| {
-					p.into_cstring().to_string_lossy().into_owned()
-				}),
-				message.member().map_or_else(String::new, |p| {
-					p.into_cstring().to_string_lossy().into_owned()
-				}),
+				message
+					.path()
+					.map_or_else(String::new, |p| p.into_cstring().to_string_lossy().into_owned()),
+				message
+					.interface()
+					.map_or_else(String::new, |p| p.into_cstring().to_string_lossy().into_owned()),
+				message
+					.member()
+					.map_or_else(String::new, |p| p.into_cstring().to_string_lossy().into_owned()),
 			);
 			match (path.as_str(), interface.as_str(), member.as_str()) {
 				// match (protocol.unwrap(), iface.unwrap(), member.unwrap()) {
 				// Action Invoked
 				(path, interface, "ActionInvoked")
-					if path == NOTIFICATION_OBJECTPATH
-						&& interface == NOTIFICATION_INTERFACE =>
+					if path == NOTIFICATION_OBJECTPATH && interface == NOTIFICATION_INTERFACE =>
 				{
-					if let (
-						&MessageItem::UInt32(nid),
-						MessageItem::Str(ref action),
-					) = (&items[0], &items[1])
+					if let (&MessageItem::UInt32(nid), MessageItem::Str(ref action)) =
+						(&items[0], &items[1])
 					{
 						if nid == id {
 							handler.call(&ActionResponse::Custom(action));
@@ -331,17 +284,13 @@ fn wait_for_action_signal(
 
 				// Notification Closed
 				(path, interface, "NotificationClosed")
-					if path == NOTIFICATION_OBJECTPATH
-						&& interface == NOTIFICATION_INTERFACE =>
+					if path == NOTIFICATION_OBJECTPATH && interface == NOTIFICATION_INTERFACE =>
 				{
-					if let (
-						&MessageItem::UInt32(nid),
-						&MessageItem::UInt32(reason),
-					) = (&items[0], &items[1])
+					if let (&MessageItem::UInt32(nid), &MessageItem::UInt32(reason)) =
+						(&items[0], &items[1])
 					{
 						if nid == id {
-							handler
-								.call(&ActionResponse::Closed(reason.into()));
+							handler.call(&ActionResponse::Closed(reason.into()));
 							break;
 						}
 					}

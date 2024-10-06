@@ -19,9 +19,7 @@ impl FromStr for Version {
 	fn from_str(s:&str) -> Result<Version> {
 		let vv = s.split('.').collect::<Vec<&str>>();
 		match (vv.first(), vv.get(1)) {
-			(Some(maj), Some(min)) => {
-				Ok(Version { major:maj.parse()?, minor:min.parse()? })
-			},
+			(Some(maj), Some(min)) => Ok(Version { major:maj.parse()?, minor:min.parse()? }),
 			_ => Err(ErrorKind::SpecVersion(s.into()).into()),
 		}
 	}
@@ -30,15 +28,11 @@ impl FromStr for Version {
 use std::cmp;
 
 impl PartialOrd for Version {
-	fn partial_cmp(&self, other:&Version) -> Option<cmp::Ordering> {
-		Some(self.cmp(other))
-	}
+	fn partial_cmp(&self, other:&Version) -> Option<cmp::Ordering> { Some(self.cmp(other)) }
 }
 
 impl PartialEq for Version {
-	fn eq(&self, other:&Version) -> bool {
-		self.major == other.major && self.minor == other.minor
-	}
+	fn eq(&self, other:&Version) -> bool { self.major == other.major && self.minor == other.minor }
 }
 
 impl Ord for Version {

@@ -54,39 +54,17 @@ impl Image {
 	}
 
 	/// Creates an image from a raw vector of bytes
-	pub fn from_rgb(
-		width:i32,
-		height:i32,
-		data:Vec<u8>,
-	) -> Result<Self, ImageError> {
+	pub fn from_rgb(width:i32, height:i32, data:Vec<u8>) -> Result<Self, ImageError> {
 		let channels = 3i32;
 		let bits_per_sample = 8;
-		Self::from_raw_data(
-			width,
-			height,
-			data,
-			channels,
-			bits_per_sample,
-			false,
-		)
+		Self::from_raw_data(width, height, data, channels, bits_per_sample, false)
 	}
 
 	/// Creates an image from a raw vector of bytes with alpha
-	pub fn from_rgba(
-		width:i32,
-		height:i32,
-		data:Vec<u8>,
-	) -> Result<Self, ImageError> {
+	pub fn from_rgba(width:i32, height:i32, data:Vec<u8>) -> Result<Self, ImageError> {
 		let channels = 4i32;
 		let bits_per_sample = 8;
-		Self::from_raw_data(
-			width,
-			height,
-			data,
-			channels,
-			bits_per_sample,
-			true,
-		)
+		Self::from_raw_data(width, height, data, channels, bits_per_sample, true)
 	}
 
 	///  Attempts to open the given path as image
@@ -169,18 +147,10 @@ impl fmt::Display for ImageError {
 		use ImageError::*;
 		match self {
 			TooBig => {
-				writeln!(
-					f,
-					"The given image is too big. DBus only has 32 bits for \
-					 width / height"
-				)
+				writeln!(f, "The given image is too big. DBus only has 32 bits for width / height")
 			},
 			WrongDataSize => {
-				writeln!(
-					f,
-					"The given bytes don't match the width, height and \
-					 channel count"
-				)
+				writeln!(f, "The given bytes don't match the width, height and channel count")
 			},
 			CantOpen(e) => writeln!(f, "Can't open given path {}", e),
 			CantConvert => writeln!(f, "Can't convert from given input"),
@@ -217,9 +187,7 @@ impl From<Image> for ImageMessage {
 }
 
 impl From<image::ImageError> for ImageError {
-	fn from(image_error:image::ImageError) -> Self {
-		ImageError::CantOpen(image_error)
-	}
+	fn from(image_error:image::ImageError) -> Self { ImageError::CantOpen(image_error) }
 }
 
 #[cfg(feature = "dbus")]
@@ -243,9 +211,7 @@ impl From<ImageMessage> for MessageItem {
 			MessageItem::Bool(img.alpha),
 			MessageItem::Int32(img.bits_per_sample),
 			MessageItem::Int32(img.channels),
-			MessageItem::Array(
-				MessageItemArray::new(bytes, "ay".into()).unwrap(),
-			),
+			MessageItem::Array(MessageItemArray::new(bytes, "ay".into()).unwrap()),
 		])
 	}
 }

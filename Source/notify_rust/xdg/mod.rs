@@ -77,12 +77,7 @@ impl NotificationHandle {
 		notification:Notification,
 	) -> NotificationHandle {
 		NotificationHandle {
-			inner:dbus_rs::DbusNotificationHandle::new(
-				id,
-				connection,
-				notification,
-			)
-			.into(),
+			inner:dbus_rs::DbusNotificationHandle::new(id, connection, notification).into(),
 		}
 	}
 
@@ -93,12 +88,7 @@ impl NotificationHandle {
 		notification:Notification,
 	) -> NotificationHandle {
 		NotificationHandle {
-			inner:zbus_rs::ZbusNotificationHandle::new(
-				id,
-				connection,
-				notification,
-			)
-			.into(),
+			inner:zbus_rs::ZbusNotificationHandle::new(id, connection, notification).into(),
 		}
 	}
 
@@ -250,11 +240,7 @@ impl From<zbus_rs::ZbusNotificationHandle> for NotificationHandle {
 // #[cfg(all(feature = "dbus", feature = "zbus"))]
 // compile_error!("the z and d features are mutually exclusive");
 
-#[cfg(all(
-	not(any(feature = "dbus", feature = "zbus")),
-	unix,
-	not(target_os = "macos")
-))]
+#[cfg(all(not(any(feature = "dbus", feature = "zbus")), unix, not(target_os = "macos")))]
 compile_error!("you have to build with either zbus or dbus turned on");
 
 /// Which Dbus implementation are we using?
@@ -270,11 +256,8 @@ pub enum DbusStack {
 const DBUS_SWITCH_VAR:&str = "DBUSRS";
 
 #[cfg(all(feature = "zbus", not(feature = "dbus")))]
-pub(crate) fn show_notification(
-	notification:&Notification,
-) -> Result<NotificationHandle> {
-	block_on(zbus_rs::connect_and_send_notification(notification))
-		.map(Into::into)
+pub(crate) fn show_notification(notification:&Notification) -> Result<NotificationHandle> {
+	block_on(zbus_rs::connect_and_send_notification(notification)).map(Into::into)
 }
 
 #[cfg(all(feature = "async", feature = "zbus"))]
@@ -295,21 +278,16 @@ pub(crate) async fn show_notification_async_at_bus(
 }
 
 #[cfg(all(feature = "dbus", not(feature = "zbus")))]
-pub(crate) fn show_notification(
-	notification:&Notification,
-) -> Result<NotificationHandle> {
+pub(crate) fn show_notification(notification:&Notification) -> Result<NotificationHandle> {
 	dbus_rs::connect_and_send_notification(notification).map(Into::into)
 }
 
 #[cfg(all(feature = "dbus", feature = "zbus"))]
-pub(crate) fn show_notification(
-	notification:&Notification,
-) -> Result<NotificationHandle> {
+pub(crate) fn show_notification(notification:&Notification) -> Result<NotificationHandle> {
 	if std::env::var(DBUS_SWITCH_VAR).is_ok() {
 		dbus_rs::connect_and_send_notification(notification).map(Into::into)
 	} else {
-		block_on(zbus_rs::connect_and_send_notification(notification))
-			.map(Into::into)
+		block_on(zbus_rs::connect_and_send_notification(notification)).map(Into::into)
 	}
 }
 
@@ -347,9 +325,7 @@ pub fn dbus_stack() -> Option<DbusStack> { None }
 ///
 /// (zbus only)
 #[cfg(all(feature = "zbus", not(feature = "dbus")))]
-pub fn get_capabilities() -> Result<Vec<String>> {
-	block_on(zbus_rs::get_capabilities())
-}
+pub fn get_capabilities() -> Result<Vec<String>> { block_on(zbus_rs::get_capabilities()) }
 
 /// Get list of all capabilities of the running notification server.
 ///
@@ -387,9 +363,7 @@ pub fn get_server_information() -> Result<ServerInformation> {
 ///
 /// (dbus-rs only)
 #[cfg(all(feature = "dbus", not(feature = "zbus")))]
-pub fn get_server_information() -> Result<ServerInformation> {
-	dbus_rs::get_server_information()
-}
+pub fn get_server_information() -> Result<ServerInformation> { dbus_rs::get_server_information() }
 
 /// Returns a struct containing `ServerInformation`.
 ///

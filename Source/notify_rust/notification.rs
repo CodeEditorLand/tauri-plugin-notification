@@ -102,9 +102,7 @@ impl Notification {
 	#[doc(hidden)]
 	#[deprecated(note = "this is a test only feature")]
 	pub fn at_bus(sub_bus:&str) -> Notification {
-		let bus = xdg::NotificationBus::custom(sub_bus)
-			.ok_or("invalid subpath")
-			.unwrap();
+		let bus = xdg::NotificationBus::custom(sub_bus).ok_or("invalid subpath").unwrap();
 		Notification { bus, ..Notification::default() }
 	}
 
@@ -166,10 +164,7 @@ impl Notification {
 
 	/// Wrapper for `Hint::ImageData`
 	#[cfg(all(feature = "images", unix, not(target_os = "macos")))]
-	pub fn image<T:AsRef<std::path::Path> + Sized>(
-		&mut self,
-		path:T,
-	) -> Result<&mut Notification> {
+	pub fn image<T:AsRef<std::path::Path> + Sized>(&mut self, path:T) -> Result<&mut Notification> {
 		let img = Image::open(&path)?;
 		self.hint(Hint::ImageData(img));
 		Ok(self)
@@ -248,16 +243,12 @@ impl Notification {
 	pub fn hint(&mut self, hint:Hint) -> &mut Notification {
 		match hint {
 			Hint::CustomInt(k, v) => {
-				self.hints_unique.insert(
-					(k.clone(), CustomHintType::Int),
-					Hint::CustomInt(k, v),
-				);
+				self.hints_unique
+					.insert((k.clone(), CustomHintType::Int), Hint::CustomInt(k, v));
 			},
 			Hint::Custom(k, v) => {
-				self.hints_unique.insert(
-					(k.clone(), CustomHintType::String),
-					Hint::Custom(k, v),
-				);
+				self.hints_unique
+					.insert((k.clone(), CustomHintType::String), Hint::Custom(k, v));
 			},
 			_ => {
 				self.hints.insert(hint);
@@ -377,10 +368,7 @@ impl Notification {
 	/// the feature `"chrono"`, then you can use `Notification::schedule()`
 	/// instead, which accepts a `chrono::DateTime<T>`.
 	#[cfg(target_os = "macos")]
-	pub fn schedule_raw(
-		&self,
-		timestamp:f64,
-	) -> Result<macos::NotificationHandle> {
+	pub fn schedule_raw(&self, timestamp:f64) -> Result<macos::NotificationHandle> {
 		macos::schedule_notification(self, timestamp)
 	}
 
@@ -388,9 +376,7 @@ impl Notification {
 	///
 	/// Returns a handle to a notification
 	#[cfg(all(unix, not(target_os = "macos")))]
-	pub fn show(&self) -> Result<xdg::NotificationHandle> {
-		xdg::show_notification(self)
-	}
+	pub fn show(&self) -> Result<xdg::NotificationHandle> { xdg::show_notification(self) }
 
 	/// Sends Notification to D-Bus.
 	///
@@ -407,12 +393,8 @@ impl Notification {
 	#[cfg(all(unix, not(target_os = "macos")))]
 	#[cfg(feature = "async")]
 	// #[cfg(test)]
-	pub async fn show_async_at_bus(
-		&self,
-		sub_bus:&str,
-	) -> Result<xdg::NotificationHandle> {
-		let bus =
-			xdg::NotificationBus::custom(sub_bus).ok_or("invalid subpath")?;
+	pub async fn show_async_at_bus(&self, sub_bus:&str) -> Result<xdg::NotificationHandle> {
+		let bus = xdg::NotificationBus::custom(sub_bus).ok_or("invalid subpath")?;
 		xdg::show_notification_async_at_bus(self, bus).await
 	}
 
@@ -421,9 +403,7 @@ impl Notification {
 	/// Returns an `Ok` no matter what, since there is currently no way of
 	/// telling the success of the notification.
 	#[cfg(target_os = "macos")]
-	pub fn show(&self) -> Result<macos::NotificationHandle> {
-		macos::show_notification(self)
-	}
+	pub fn show(&self) -> Result<macos::NotificationHandle> { macos::show_notification(self) }
 
 	/// Sends Notification to `NSUserNotificationCenter`.
 	///
@@ -437,8 +417,7 @@ impl Notification {
 	#[deprecated = "this was never meant to be public API"]
 	pub fn show_debug(&mut self) -> Result<xdg::NotificationHandle> {
 		println!(
-			"Notification:\n{appname}: ({icon}) {summary:?} {body:?}\nhints: \
-			 [{hints:?}]\n",
+			"Notification:\n{appname}: ({icon}) {summary:?} {body:?}\nhints: [{hints:?}]\n",
 			appname = self.appname,
 			summary = self.summary,
 			body = self.body,

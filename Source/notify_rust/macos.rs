@@ -1,10 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-pub use mac_notification_sys::error::{
-	ApplicationError,
-	Error as MacOsError,
-	NotificationError,
-};
+pub use mac_notification_sys::error::{ApplicationError, Error as MacOsError, NotificationError};
 
 use super::{error::*, notification::Notification};
 
@@ -34,9 +30,7 @@ impl DerefMut for NotificationHandle {
 	fn deref_mut(&mut self) -> &mut Notification { &mut self.notification }
 }
 
-pub(crate) fn show_notification(
-	notification:&Notification,
-) -> Result<NotificationHandle> {
+pub(crate) fn show_notification(notification:&Notification) -> Result<NotificationHandle> {
 	mac_notification_sys::Notification::default()
 		.title(notification.summary.as_str())
 		.message(&notification.body)

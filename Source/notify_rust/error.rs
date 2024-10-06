@@ -104,9 +104,7 @@ impl From<ImageError> for Error {
 }
 
 impl From<num::ParseIntError> for Error {
-	fn from(e:num::ParseIntError) -> Error {
-		Error { kind:ErrorKind::Parse(e) }
-	}
+	fn from(e:num::ParseIntError) -> Error { Error { kind:ErrorKind::Parse(e) } }
 }
 
 impl From<ErrorKind> for Error {

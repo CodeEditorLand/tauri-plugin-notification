@@ -6,9 +6,7 @@ pub use super::{error::*, notification::Notification, timeout::Timeout};
 
 pub(crate) fn show_notification(notification:&Notification) -> Result<()> {
 	let sound = match &notification.sound_name {
-		Some(chosen_sound_name) => {
-			winrt_notification::Sound::from_str(chosen_sound_name).ok()
-		},
+		Some(chosen_sound_name) => winrt_notification::Sound::from_str(chosen_sound_name).ok(),
 		None => None,
 	};
 

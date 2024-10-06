@@ -47,9 +47,7 @@ impl From<Duration> for Timeout {
 		} else if duration.as_millis() > u32::MAX.into() {
 			Timeout::Default
 		} else {
-			Timeout::Milliseconds(
-				duration.as_millis().try_into().unwrap_or(u32::MAX),
-			)
+			Timeout::Milliseconds(duration.as_millis().try_into().unwrap_or(u32::MAX))
 		}
 	}
 }
@@ -71,9 +69,7 @@ impl FromStr for Timeout {
 		match s {
 			"default" => Ok(Timeout::Default),
 			"never" => Ok(Timeout::Never),
-			milliseconds => {
-				Ok(Timeout::Milliseconds(u32::from_str(milliseconds)?))
-			},
+			milliseconds => Ok(Timeout::Milliseconds(u32::from_str(milliseconds)?)),
 		}
 	}
 }
@@ -94,9 +90,7 @@ impl std::ops::Deref for TimeoutMessage {
 impl TryFrom<&dbus::arg::messageitem::MessageItem> for TimeoutMessage {
 	type Error = ();
 
-	fn try_from(
-		mi:&dbus::arg::messageitem::MessageItem,
-	) -> Result<TimeoutMessage, ()> {
+	fn try_from(mi:&dbus::arg::messageitem::MessageItem) -> Result<TimeoutMessage, ()> {
 		mi.inner::<i32>().map(|i| TimeoutMessage(i.into()))
 	}
 }
