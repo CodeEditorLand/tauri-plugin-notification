@@ -478,6 +478,7 @@ declare function onNotificationReceived(
 declare function onAction(
 	cb: (notification: Options) => void,
 ): Promise<PluginListener>;
+
 export type {
 	Attachment,
 	Options,
@@ -488,6 +489,7 @@ export type {
 	Channel,
 	ScheduleInterval,
 };
+
 export {
 	Importance,
 	Visibility,
