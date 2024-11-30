@@ -74,6 +74,7 @@ impl<'de> Deserialize<'de> for ScheduleEvery {
 	where
 		D: Deserializer<'de>, {
 		let s = String::deserialize(deserializer)?;
+
 		match s.to_lowercase().as_str() {
 			"year" => Ok(Self::Year),
 			"month" => Ok(Self::Month),
@@ -121,6 +122,7 @@ pub enum Schedule {
 // custom ISO-8601 serialization that does not use 6 digits for years.
 mod iso8601 {
 	use serde::{ser::Error as _, Serialize, Serializer};
+
 	use time::{
 		format_description::well_known::{
 			iso8601::{Config, EncodedConfig},
@@ -303,6 +305,7 @@ pub use android::*;
 #[cfg(target_os = "android")]
 mod android {
 	use serde::{Deserialize, Serialize};
+
 	use serde_repr::{Deserialize_repr, Serialize_repr};
 
 	#[derive(Debug, Clone, Copy, Serialize_repr, Deserialize_repr)]
@@ -381,36 +384,43 @@ mod android {
 	impl ChannelBuilder {
 		pub fn description(mut self, description:impl Into<String>) -> Self {
 			self.0.description.replace(description.into());
+
 			self
 		}
 
 		pub fn sound(mut self, sound:impl Into<String>) -> Self {
 			self.0.sound.replace(sound.into());
+
 			self
 		}
 
 		pub fn lights(mut self, lights:bool) -> Self {
 			self.0.lights = lights;
+
 			self
 		}
 
 		pub fn light_color(mut self, color:impl Into<String>) -> Self {
 			self.0.light_color.replace(color.into());
+
 			self
 		}
 
 		pub fn vibration(mut self, vibration:bool) -> Self {
 			self.0.vibration = vibration;
+
 			self
 		}
 
 		pub fn importance(mut self, importance:Importance) -> Self {
 			self.0.importance = importance;
+
 			self
 		}
 
 		pub fn visibility(mut self, visibility:Visibility) -> Self {
 			self.0.visibility.replace(visibility);
+
 			self
 		}
 
