@@ -4,11 +4,11 @@
 
 use std::collections::HashMap;
 
-use serde::{de::DeserializeOwned, Deserialize};
+use serde::{Deserialize, de::DeserializeOwned};
 use tauri::{
-	plugin::{PermissionState, PluginApi, PluginHandle},
 	AppHandle,
 	Runtime,
+	plugin::{PermissionState, PluginApi, PluginHandle},
 };
 
 use crate::models::*;
